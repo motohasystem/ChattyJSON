@@ -1,4 +1,5 @@
 import json
+import os
 
 from openai_generator import OpenAIGenerator
 
@@ -36,6 +37,15 @@ class TextGenerator:
         if generated_text:
             print("生成されたテキスト:")
             print(generated_text)
+
+            # ファイルを保存するまえに、保存先ディレクトリがなければ作成する
+            output_dir = os.path.dirname(output_file)
+            try:
+                if not os.path.exists(output_dir):
+                    os.makedirs(output_dir)
+            except OSError as e:
+                print(f"ディレクトリ作成エラー: {e}")
+                return
 
             # 生成されたテキストをJSON形式で保存
             try:
