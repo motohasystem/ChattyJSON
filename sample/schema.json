@@ -1,0 +1,35 @@
+{
+    "type": "json_schema",
+    "json_schema": {
+        "name": "packaaan_result_message_schema",
+        "strict": true,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "messages": {
+                    "type": "object",
+                    "description": "困窮スコアに応じたメッセージ",
+                    "properties": {
+                        "high_risk": {
+                            "type": "string",
+                            "description": "困窮スコアが高い場合のメッセージ"
+                        },
+                        "low_risk": {
+                            "type": "string",
+                            "description": "困窮スコアが低い場合のメッセージ"
+                        }
+                    },
+                    "required": [
+                        "high_risk",
+                        "low_risk"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "messages"
+            ],
+            "additionalProperties": false
+        }
+    }
+}
