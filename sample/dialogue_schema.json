@@ -1,0 +1,42 @@
+{
+    "type": "json_schema",
+    "json_schema": {
+        "name": "dialogue_schema",
+        "strict": true,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "dialogue": {
+                    "type": "array",
+                    "description": "A collection of dialogue entries.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "speaker": {
+                                "type": "string",
+                                "description": "The name of the speaker.",
+                                "enum": [
+                                    "グルレカ",
+                                    "ジェリー"
+                                ]
+                            },
+                            "line": {
+                                "type": "string",
+                                "description": "The line spoken by the speaker."
+                            }
+                        },
+                        "required": [
+                            "speaker",
+                            "line"
+                        ],
+                        "additionalProperties": false
+                    }
+                }
+            },
+            "required": [
+                "dialogue"
+            ],
+            "additionalProperties": false
+        }
+    }
+}
