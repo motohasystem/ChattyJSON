@@ -3,7 +3,7 @@ from openai import OpenAI  # type: ignore
 
 
 class OpenAIGenerator:
-    def __init__(self, api_key, model="gpt-4o-mini"):
+    def __init__(self, api_key, model):
         self.api_key = api_key
         self.model = model
         self.schema_json = None
@@ -41,39 +41,31 @@ class OpenAIGenerator:
                 # exit(0)
         else:
             # 未指定の場合はデフォルトのスキーマを使用します。
+            # json_schema = {
+            #     "type": "json_schema",
+            #     "json_schema": {
+            #         "name": "default_schema",
+            #         "strict": True,
+            #         "schema": {
+            #             "type": "object",
+            #             "properties": {},
+            #             "additionalProperties": True,
+            #         },
+            #     },
+            # }
             json_schema = {
                 "type": "json_schema",
                 "json_schema": {
-                    "name": "dialogue_schema",
+                    "name": "default_schema",
                     "strict": True,
                     "schema": {
                         "type": "object",
                         "properties": {
-                            "dialogue": {
-                                "type": "array",
+                            "data": {
+                                "type": "object",
                                 "description": "A collection of dialogue entries.",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "speaker": {
-                                            "type": "string",
-                                            "description": "The name of the speaker.",
-                                            "enum": [
-                                                "Grreka",
-                                                "Jelly",
-                                            ],
-                                        },
-                                        "line": {
-                                            "type": "string",
-                                            "description": "The line spoken by the speaker.",
-                                        },
-                                    },
-                                    "required": ["speaker", "line"],
-                                    "additionalProperties": False,
-                                },
                             }
                         },
-                        "required": ["dialogue"],
                         "additionalProperties": False,
                     },
                 },
@@ -96,9 +88,10 @@ class OpenAIGenerator:
             )
 
         try:
+            print(json_schema)
+            print(messages)
             response = client.chat.completions.create(
-                model="gpt-4o",
-                # model="gpt-4o-mini",
+                model=self.model,
                 messages=messages,  # type: ignore
                 response_format=json_schema,  # type: ignore
                 temperature=1,
@@ -110,5 +103,6 @@ class OpenAIGenerator:
 
             return response.choices[0].message.content
         except Exception as e:
-            print(f"OpenAI API呼び出しエラー: {e}")
-            return None
+            msg = f"OpenAI API呼び出しエラー: {e}"
+            # print(msg)
+            raise Exception(msg)
