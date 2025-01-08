@@ -1,0 +1,2 @@
+# ChattyJSON
+プロンプトとJSONスキーマを与えてJSONファイルを出力するCLIツールです
