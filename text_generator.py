@@ -24,6 +24,9 @@ class TextGenerator:
         self.schema_json = schema_json
         self.generator.schema_json = schema_json
 
+    def set_schema_model(self, schema_model):
+        self.generator.schema_model = schema_model
+
     def run(self):
         self.generate_and_save_text(
             prompt_file=self.prompt_file,

@@ -31,6 +31,12 @@ if __name__ == "__main__":
         default="",
         help="JSONスキーマを定義したJSONファイルを指定するオプションです。",
     )
+    parser.add_argument(
+        "--schema_model",
+        required=False,
+        default="",
+        help="BaseModelでJSONスキーマを定義したファイルを指定するオプションです。",
+    )
 
     args = parser.parse_args()
 
@@ -54,6 +60,9 @@ if __name__ == "__main__":
     # JSONスキーマが指定されている場合は、スキーマファイルパスをgeneratorにセットする
     if args.schema_json != "":
         generator.set_schema_json(args.schema_json)
+
+    if args.schema_model != "":
+        generator.set_schema_model(args.schema_model)
 
     try:
         generator.run()

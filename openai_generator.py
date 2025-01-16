@@ -1,5 +1,6 @@
 import json
 from openai import OpenAI  # type: ignore
+from schema_models.RecordSchema import SchemaModel
 
 
 class OpenAIGenerator:
@@ -7,6 +8,7 @@ class OpenAIGenerator:
         self.api_key = api_key
         self.model = model
         self.schema_json = None
+        self.schema_model = None
 
     def generate_text(self, prompt_file_path, systemprompt_file_path=""):
         # 指定されたmdファイルを読み込み、プロンプトとして使用します。
@@ -39,20 +41,18 @@ class OpenAIGenerator:
                 json_schema = json.load(file)
                 # print(json_schema)
                 # exit(0)
+        elif self.schema_model:
+            # BaseModelで定義されたスキーマを使用します。
+            # schema_modelsフォルダにあるすべてのpyファイルを読み込み、その中からself.schema_modelに指定されたモデルを取得します。
+            # モデルが見つからない場合はエラーを出力します。
+            try:
+                exec(f"from schema_models.{self.schema_model} import SchemaModel")
+            except Exception as e:
+                msg = f"スキーマモデルのインポートエラー: {e}"
+                # print(msg)
+                raise Exception(msg)
         else:
             # 未指定の場合はデフォルトのスキーマを使用します。
-            # json_schema = {
-            #     "type": "json_schema",
-            #     "json_schema": {
-            #         "name": "default_schema",
-            #         "strict": True,
-            #         "schema": {
-            #             "type": "object",
-            #             "properties": {},
-            #             "additionalProperties": True,
-            #         },
-            #     },
-            # }
             json_schema = {
                 "type": "json_schema",
                 "json_schema": {
@@ -78,6 +78,7 @@ class OpenAIGenerator:
                 "content": [{"type": "text", "text": prompt}],
             },
         ]
+
         if system_prompt != "":
             messages.insert(
                 0,
@@ -88,18 +89,27 @@ class OpenAIGenerator:
             )
 
         try:
-            print(json_schema)
+            # print(json_schema)
             print(messages)
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=messages,  # type: ignore
-                response_format=json_schema,  # type: ignore
-                temperature=1,
-                max_completion_tokens=4096,
-                top_p=1,
-                frequency_penalty=0,
-                presence_penalty=0,
-            )
+
+            if self.schema_model is not None:
+                response = client.beta.chat.completions.parse(
+                    model=self.model,
+                    messages=messages,  # type: ignore
+                    response_format=SchemaModel,  # type: ignore
+                )
+
+            else:
+                response = client.chat.completions.create(
+                    model=self.model,
+                    messages=messages,  # type: ignore
+                    response_format=json_schema,  # type: ignore
+                    temperature=1,
+                    max_completion_tokens=4096,
+                    top_p=1,
+                    frequency_penalty=0,
+                    presence_penalty=0,
+                )
 
             return response.choices[0].message.content
         except Exception as e:
