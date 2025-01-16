@@ -41,18 +41,6 @@ class OpenAIGenerator:
                 # exit(0)
         else:
             # 未指定の場合はデフォルトのスキーマを使用します。
-            # json_schema = {
-            #     "type": "json_schema",
-            #     "json_schema": {
-            #         "name": "default_schema",
-            #         "strict": True,
-            #         "schema": {
-            #             "type": "object",
-            #             "properties": {},
-            #             "additionalProperties": True,
-            #         },
-            #     },
-            # }
             json_schema = {
                 "type": "json_schema",
                 "json_schema": {
@@ -106,3 +94,26 @@ class OpenAIGenerator:
             msg = f"OpenAI API呼び出しエラー: {e}"
             # print(msg)
             raise Exception(msg)
+
+    def call_image_generate(self, system_prompt, prompt, size, quality, n):
+        """
+        OpenAI APIを使用して画像を生成します。
+        """
+
+        OpenAI.api_key = self.api_key
+        client = OpenAI()
+
+        concatenated_prompt = system_prompt + prompt
+        # 改行を削除
+        concatenated_prompt = concatenated_prompt.replace("\n", "")
+        print(f"Prompt: {concatenated_prompt}")
+
+        response = client.images.generate(
+            model=self.model,
+            prompt=concatenated_prompt,
+            size=size,
+            quality=quality,
+            n=n,
+        )
+
+        return response.data[0].url
