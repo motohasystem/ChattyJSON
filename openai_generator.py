@@ -95,7 +95,7 @@ class OpenAIGenerator:
             # print(msg)
             raise Exception(msg)
 
-    def call_image_generate(self, system_prompt, prompt, size, quality, n):
+    def call_image_generate(self, system_prompt, prompt, size, quality, n, style):
         """
         OpenAI APIを使用して画像を生成します。
         """
@@ -107,6 +107,7 @@ class OpenAIGenerator:
         # 改行を削除
         concatenated_prompt = concatenated_prompt.replace("\n", "")
         print(f"Prompt: {concatenated_prompt}")
+        print(f"Model: {self.model}")
 
         response = client.images.generate(
             model=self.model,
@@ -114,6 +115,9 @@ class OpenAIGenerator:
             size=size,
             quality=quality,
             n=n,
+            style=style,
         )
+
+        print(f"reviced prompt: {response.data[0].revised_prompt}")
 
         return response.data[0].url

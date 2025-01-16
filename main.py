@@ -2,15 +2,18 @@ import os
 import sys
 import argparse
 
+from dotenv import load_dotenv
 from image_generator import ImageGenerator
 from text_generator import TextGenerator
 
 
-def generate_image(api_key, api_model, args):
+def generate_image(api_key, api_model, args, style="vivid"):
     # ImageGeneratorを初期化して画像を生成
     generator = ImageGenerator(
         api_key, api_model, args.prompt_file, args.output_file, args.system_prompt_file
     )
+
+    generator.style = style
 
     try:
         generator.run()
@@ -75,6 +78,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # 環境変数からAPIキーを取得
+    load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         print(
@@ -89,10 +93,15 @@ if __name__ == "__main__":
     if args.image:
         print("画像生成を行います。")
         image_api_model = os.getenv("OPENAI_IMAGE_MODEL")
+        print(f"image_api_model: {image_api_model}")
         if not image_api_model:
             image_api_model = "dall-e-2"
 
-        generate_image(api_key, image_api_model, args)
+        image_style = os.getenv("OPENAI_DALLE3_STYLE")
+        if not image_style:
+            image_style = "vivid"  # 'vivid' or 'natural'
+
+        generate_image(api_key, image_api_model, args, image_style)
     else:
         print("テキスト生成を行います。")
         generate_text(api_key, api_model, args)
